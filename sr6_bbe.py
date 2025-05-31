@@ -58,15 +58,17 @@ def encart(paragraph, text, document, style):
 
 def encarts(document):
     encart_begin = False
+    encart_begin_regex = re.compile("^Encart\s?:\s?")
+    encart_end_regex = re.compile("^Fin\sEncart", re.IGNORECASE)
     for paragraph in document.paragraphs:
-        if paragraph.text.startswith("Encart:") or paragraph.text.startswith("Encart :"):
+        if re.match(encart_begin_regex, paragraph.text):
             print(paragraph.text)
             encart_begin = not encart_begin
-            encart(paragraph,re.sub(r"^Encart\s?:\s?", "", paragraph.text), document, document.styles['SR6 - Encart titre 1'])
+            encart(paragraph,re.sub(encart_begin_regex, "", paragraph.text), document, document.styles['SR6 - Encart titre 1'])
         else:
             if encart_begin:
                 encart(paragraph, paragraph.text, document, document.styles['SR6 - Encart texte'])
-        if paragraph.text.startswith("Fin Encart"):
+        if re.match(encart_end_regex, paragraph.text):
             #encart(paragraph, " ", document, document.styles['SR6 - Encart texte'])
             print(paragraph.text)
             encart_begin = not encart_begin
